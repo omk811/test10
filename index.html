@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة همزتي الوصل والقطع - الصف الخامس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #333;
+            padding: 15px;
+            margin: 0;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            flex: 1;
+        }
+        
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin: 15px 0;
+            font-size: 1.5rem;
+        }
+        
+        .game-container {
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section {
+            display: none;
+            padding: 15px;
+            border-radius: 12px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .options label {
+            display: block;
+            margin: 8px 0;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .options label:hover {
+            background: #bbdefb;
+        }
+        
+        input[type="text"], input[type="radio"] {
+            margin-left: 8px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Cairo', sans-serif;
+            margin-top: 5px;
+        }
+        
+        button {
+            background: #6e8efb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 15px 5px;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        button:hover {
+            background: #5a7df7;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        
+        .score-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #4a4a4a;
+            margin: 15px 0;
+        }
+        
+        .feedback {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: bold;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .final-score {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #6e8efb;
+            margin: 20px 0;
+        }
+        
+        .rank {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            background: #e3f2fd;
+        }
+        
+        .emoji {
+            font-size: 2.5rem;
+            margin: 10px 0;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #6e8efb;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 5px;
+            display: inline-block;
+            padding: 5px 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        footer a:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .teacher-name {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        
+        /* تحسينات للشاشات المتوسطة والكبيرة */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 90%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .game-container {
+                padding: 25px;
+            }
+            
+            input[type="text"] {
+                width: 70%;
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .container {
+                max-width: 800px;
+            }
+            
+            .question {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 لعبة همزتي الوصل والقطع 🎮<br>الصف الخامس</h1>
+        
+        <div class="game-container">
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <!-- الجزء الأول: اختر الإجابة الصحيحة -->
+            <div class="section active" id="section1">
+                <h2>🧩 الجزء الأول: اختر الإجابة الصحيحة (5 نقاط)</h2>
+                <div class="score-display">النقاط: <span id="score1">0</span>/5</div>
+                
+                <div class="question" id="q1">
+                    <p><strong>السؤال 1:</strong> أي من الكلمات تبدأ بهمزة وصل؟</p>
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="a"> أ) أحمد</label>
+                        <label><input type="radio" name="q1" value="b"> ب) امرؤ</label>
+                        <label><input type="radio" name="q1" value="c"> ج) أسد</label>
+                    </div>
+                    <div class="feedback" id="feedback1"></div>
+                </div>
+                
+                <div class="question" id="q2">
+                    <p><strong>السؤال 2:</strong> أي من الكلمات تبدأ بهمزة قطع؟</p>
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="a"> أ) ابن</label>
+                        <label><input type="radio" name="q2" value="b"> ب) استيقظ</label>
+                        <label><input type="radio" name="q2" value="c"> ج) ابتسم</label>
+                    </div>
+                    <div class="feedback" id="feedback2"></div>
+                </div>
+                
+                <div class="question" id="q3">
+                    <p><strong>السؤال 3:</strong> همزة الوصل تظهر في:</p>
+                    <div class="options">
+                        <label><input type="radio" name="q3" value="a"> أ) أول الكلمة فقط</label>
+                        <label><input type="radio" name="q3" value="b"> ب) وسط الكلمة</label>
+                        <label><input type="radio" name="q3" value="c"> ج) آخر الكلمة</label>
+                    </div>
+                    <div class="feedback" id="feedback3"></div>
+                </div>
+                
+                <div class="question" id="q4">
+                    <p><strong>السؤال 4:</strong> همزة القطع تظهر في:</p>
+                    <div class="options">
+                        <label><input type="radio" name="q4" value="a"> أ) أول الكلمة فقط</label>
+                        <label><input type="radio" name="q4" value="b"> ب) وسط الكلمة</label>
+                        <label><input type="radio" name="q4" value="c"> ج) آخر الكلمة</label>
+                    </div>
+                    <div class="feedback" id="feedback4"></div>
+                </div>
+                
+                <div class="question" id="q5">
+                    <p><strong>السؤال 5:</strong> أي من الكلمات مكتوبة بشكل صحيح؟</p>
+                    <div class="options">
+                        <label><input type="radio" name="q5" value="a"> أ) ابن</label>
+                        <label><input type="radio" name="q5" value="b"> ب) إبتدأ</label>
+                        <label><input type="radio" name="q5" value="c"> ج) أمر</label>
+                    </div>
+                    <div class="feedback" id="feedback5"></div>
+                </div>
+                
+                <button onclick="checkSection1()">تحقق من إجاباتك</button>
+                <button onclick="nextSection(2)" id="next1" class="hidden">الجزء التالي ➡️</button>
+            </div>
+            
+            <!-- الجزء الثاني: أكمل الفراغ -->
+            <div class="section" id="section2">
+                <h2>✍️ الجزء الثاني: أكمل الفراغ (5 نقاط)</h2>
+                <div class="score-display">النقاط: <span id="score2">0</span>/5</div>
+                
+                <div class="question" id="q6">
+                    <p><strong>السؤال 6:</strong> ضع همزة الوصل في الفراغ: ___امرؤ صادق.</p>
+                    <input type="text" id="answer6" placeholder="اكتب إجابتك هنا">
+                    <div class="feedback" id="feedback6"></div>
+                </div>
+                
+                <div class="question" id="q7">
+                    <p><strong>السؤال 7:</strong> ضع همزة القطع في الفراغ: ___أسد قوي.</p>
+                    <input type="text" id="answer7" placeholder="اكتب إجابتك هنا">
+                    <div class="feedback" id="feedback7"></div>
+                </div>
+                
+                <div class="question" id="q8">
+                    <p><strong>السؤال 8:</strong> أكمل الكلمة بهمزة وصل: ___استمع إلى المعلم.</p>
+                    <input type="text" id="answer8" placeholder="اكتب إجابتك هنا">
+                    <div class="feedback" id="feedback8"></div>
+                </div>
+                
+                <div class="question" id="q9">
+                    <p><strong>السؤال 9:</strong> أكمل الكلمة بهمزة قطع: ___أكل الولد التفاحة.</p>
+                    <input type="text" id="answer9" placeholder="اكتب إجابتك هنا">
+                    <div class="feedback" id="feedback9"></div>
+                </div>
+                
+                <div class="question" id="q10">
+                    <p><strong>السؤال 10:</strong> ضع الهمزة الصحيحة: ___إبراهيم طالب مجتهد.</p>
+                    <input type="text" id="answer10" placeholder="اكتب إجابتك هنا">
+                    <div class="feedback" id="feedback10"></div>
+                </div>
+                
+                <button onclick="checkSection2()">تحقق من إجاباتك</button>
+                <button onclick="nextSection(3)" id="next2" class="hidden">الجزء التالي ➡️</button>
+            </div>
+            
+            <!-- الجزء الثالث: صح أو خطأ -->
+            <div class="section" id="section3">
+                <h2>✔️❌ الجزء الثالث: صح أو خطأ (5 نقاط)</h2>
+                <div class="score-display">النقاط: <span id="score3">0</span>/5</div>
+                
+                <div class="question" id="q11">
+                    <p><strong>السؤال 11:</strong> همزة الوصل تظهر في أول الاسم فقط. ( )</p>
+                    <div class="options">
+                        <label><input type="radio" name="q11" value="true"> ✔️ صح</label>
+                        <label><input type="radio" name="q11" value="false"> ❌ خطأ</label>
+                    </div>
+                    <div class="feedback" id="feedback11"></div>
+                </div>
+                
+                <div class="question" id="q12">
+                    <p><strong>السؤال 12:</strong> همزة القطع تظهر في أول الكلمة فقط. ( )</p>
+                    <div class="options">
+                        <label><input type="radio" name="q12" value="true"> ✔️ صح</label>
+                        <label><input type="radio" name="q12" value="false"> ❌ خطأ</label>
+                    </div>
+                    <div class="feedback" id="feedback12"></div>
+                </div>
+                
+                <div class="question" id="q13">
+                    <p><strong>السؤال 13:</strong> همزة الوصل لا تُلفظ إذا جاءت بعد كلمة أخرى. ( )</p>
+                    <div class="options">
+                        <label><input type="radio" name="q13" value="true"> ✔️ صح</label>
+                        <label><input type="radio" name="q13" value="false"> ❌ خطأ</label>
+                    </div>
+                    <div class="feedback" id="feedback13"></div>
+                </div>
+                
+                <div class="question" id="q14">
+                    <p><strong>السؤال 14:</strong> الفعل الماضي للمتكلم يبدأ بهمزة وصل. ( )</p>
+                    <div class="options">
+                        <label><input type="radio" name="q14" value="true"> ✔️ صح</label>
+                        <label><input type="radio" name="q14" value="false"> ❌ خطأ</label>
+                    </div>
+                    <div class="feedback" id="feedback14"></div>
+                </div>
+                
+                <div class="question" id="q15">
+                    <p><strong>السؤال 15:</strong> كلمة "ابن" تبدأ بهمزة وصل. ( )</p>
+                    <div class="options">
+                        <label><input type="radio" name="q15" value="true"> ✔️ صح</label>
+                        <label><input type="radio" name="q15" value="false"> ❌ خطأ</label>
+                    </div>
+                    <div class="feedback" id="feedback15"></div>
+                </div>
+                
+                <button onclick="checkSection3()">تحقق من إجاباتك</button>
+                <button onclick="nextSection(4)" id="next3" class="hidden">الجزء التالي ➡️</button>
+            </div>
+            
+            <!-- الجزء الرابع: ضع الهمزة الصحيحة -->
+            <div class="section" id="section4">
+                <h2>🎯 الجزء الرابع: ضع الهمزة الصحيحة (5 نقاط)</h2>
+                <div class="score-display">النقاط: <span id="score4">0</span>/5</div>
+                
+                <div class="question" id="q16">
+                    <p><strong>السؤال 16:</strong> ضع الهمزة الصحيحة: ___استيقظ مبكرًا.</p>
+                    <input type="text" id="answer16" placeholder="اكتب الكلمة كاملة">
+                    <div class="feedback" id="feedback16"></div>
+                </div>
+                
+                <div class="question" id="q17">
+                    <p><strong>السؤال 17:</strong> ضع الهمزة الصحيحة: ___أحمد يلعب في الحديقة.</p>
+                    <input type="text" id="answer17" placeholder="اكتب الكلمة كاملة">
+                    <div class="feedback" id="feedback17"></div>
+                </div>
+                
+                <div class="question" id="q18">
+                    <p><strong>السؤال 18:</strong> ضع الهمزة الصحيحة: ___ابن صالح.</p>
+                    <input type="text" id="answer18" placeholder="اكتب الكلمة كاملة">
+                    <div class="feedback" id="feedback18"></div>
+                </div>
+                
+                <div class="question" id="q19">
+                    <p><strong>السؤال 19:</strong> ضع الهمزة الصحيحة: ___امرؤ صادق.</p>
+                    <input type="text" id="answer19" placeholder="اكتب الكلمة كاملة">
+                    <div class="feedback" id="feedback19"></div>
+                </div>
+                
+                <div class="question" id="q20">
+                    <p><strong>السؤال 20:</strong> ضع الهمزة الصحيحة: ___أكلت التفاحة.</p>
+                    <input type="text" id="answer20" placeholder="اكتب الكلمة كاملة">
+                    <div class="feedback" id="feedback20"></div>
+                </div>
+                
+                <button onclick="checkSection4()">تحقق من إجاباتك</button>
+                <button onclick="showFinalResults()" id="next4" class="hidden">عرض النتيجة النهائية 🏆</button>
+            </div>
+            
+            <!-- النتيجة النهائية -->
+            <div class="section" id="finalSection">
+                <h2>🏆 النتيجة النهائية 🏆</h2>
+                <div class="final-score">المجموع: <span id="finalScore">0</span>/20</div>
+                <div class="emoji" id="emojiResult">🎉</div>
+                <div class="rank" id="rankResult">بطل الهمزات!</div>
+                
+                <button onclick="restartGame()">إعادة اللعبة 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div>رابط قناة الواتساب: 
+            <a href="https://whatsapp.com/channel/0029VamotBKCxoAy3fzUcv3T" target="_blank">اضغط هنا</a>
+        </div>
+        <div>رابط الشرح بالدرس: 
+            <a href="https://omk811.blogspot.com/2023/09/blog-post_7.html" target="_blank">اضغط هنا</a>
+        </div>
+        <span class="teacher-name">الأستاذ خليل البلوشي</span>
+    </footer>
+
+    <script>
+        // Current section and scores
+        let currentSection = 1;
+        let scores = [0, 0, 0, 0];
+        const totalQuestions = 20;
+        let answeredQuestions = 0;
+        
+        // Correct answers
+        const correctAnswers = {
+            q1: "b",
+            q2: "c",
+            q3: "a",
+            q4: "b",
+            q5: "c",
+            q6: "ا",
+            q7: "أ",
+            q8: "ا",
+            q9: "أ",
+            q10: "إ",
+            q11: "false",
+            q12: "false",
+            q13: "true",
+            q14: "false",
+            q15: "true",
+            q16: "استيقظ",
+            q17: "أحمد",
+            q18: "ابن",
+            q19: "امرؤ",
+            q20: "أكلت"
+        };
+        
+        // Check answers for section 1
+        function checkSection1() {
+            let score = 0;
+            for (let i = 1; i <= 5; i++) {
+                const questionId = "q" + i;
+                const selected = document.querySelector(`input[name="${questionId}"]:checked`);
+                const feedback = document.getElementById(`feedback${i}`);
+                
+                if (!selected) {
+                    feedback.textContent = "يرجى اختيار إجابة!";
+                    feedback.className = "feedback incorrect";
+                    feedback.style.display = "block";
+                    continue;
+                }
+                
+                if (selected.value === correctAnswers[questionId]) {
+                    score++;
+                    feedback.textContent = "✅ إجابة صحيحة!";
+                    feedback.className = "feedback correct";
+                } else {
+                    feedback.textContent = `❌ إجابة خاطئة! الإجابة الصحيحة: ${getCorrectAnswerText(i, selected.value)}`;
+                    feedback.className = "feedback incorrect";
+                }
+                feedback.style.display = "block";
+            }
+            
+            scores[0] = score;
+            document.getElementById("score1").textContent = score;
+            document.getElementById("next1").classList.remove("hidden");
+            updateProgressBar();
+        }
+        
+        // Check answers for section 2
+        function checkSection2() {
+            let score = 0;
+            for (let i = 6; i <= 10; i++) {
+                const answerId = "answer" + i;
+                const userAnswer = document.getElementById(answerId).value.trim();
+                const feedback = document.getElementById(`feedback${i}`);
+                
+                if (!userAnswer) {
+                    feedback.textContent = "يرجى كتابة إجابة!";
+                    feedback.className = "feedback incorrect";
+                    feedback.style.display = "block";
+                    continue;
+                }
+                
+                if (userAnswer === correctAnswers["q" + i]) {
+                    score++;
+                    feedback.textContent = "✅ إجابة صحيحة!";
+                    feedback.className = "feedback correct";
+                } else {
+                    feedback.textContent = `❌ إجابة خاطئة! الإجابة الصحيحة: ${correctAnswers["q" + i]}`;
+                    feedback.className = "feedback incorrect";
+                }
+                feedback.style.display = "block";
+            }
+            
+            scores[1] = score;
+            document.getElementById("score2").textContent = score;
+            document.getElementById("next2").classList.remove("hidden");
+            updateProgressBar();
+        }
+        
+        // Check answers for section 3
+        function checkSection3() {
+            let score = 0;
+            for (let i = 11; i <= 15; i++) {
+                const questionId = "q" + i;
+                const selected = document.querySelector(`input[name="${questionId}"]:checked`);
+                const feedback = document.getElementById(`feedback${i}`);
+                
+                if (!selected) {
+                    feedback.textContent = "يرجى اختيار إجابة!";
+                    feedback.className = "feedback incorrect";
+                    feedback.style.display = "block";
+                    continue;
+                }
+                
+                if (selected.value === correctAnswers[questionId]) {
+                    score++;
+                    feedback.textContent = "✅ إجابة صحيحة!";
+                    feedback.className = "feedback correct";
+                } else {
+                    feedback.textContent = `❌ إجابة خاطئة! الإجابة الصحيحة: ${getCorrectAnswerText(i, selected.value)}`;
+                    feedback.className = "feedback incorrect";
+                }
+                feedback.style.display = "block";
+            }
+            
+            scores[2] = score;
+            document.getElementById("score3").textContent = score;
+            document.getElementById("next3").classList.remove("hidden");
+            updateProgressBar();
+        }
+        
+        // Check answers for section 4
+        function checkSection4() {
+            let score = 0;
+            for (let i = 16; i <= 20; i++) {
+                const answerId = "answer" + i;
+                const userAnswer = document.getElementById(answerId).value.trim();
+                const feedback = document.getElementById(`feedback${i}`);
+                
+                if (!userAnswer) {
+                    feedback.textContent = "يرجى كتابة إجابة!";
+                    feedback.className = "feedback incorrect";
+                    feedback.style.display = "block";
+                    continue;
+                }
+                
+                if (userAnswer === correctAnswers["q" + i]) {
+                    score++;
+                    feedback.textContent = "✅ إجابة صحيحة!";
+                    feedback.className = "feedback correct";
+                } else {
+                    feedback.textContent = `❌ إجابة خاطئة! الإجابة الصحيحة: ${correctAnswers["q" + i]}`;
+                    feedback.className = "feedback incorrect";
+                }
+                feedback.style.display = "block";
+            }
+            
+            scores[3] = score;
+            document.getElementById("score4").textContent = score;
+            document.getElementById("next4").classList.remove("hidden");
+            updateProgressBar();
+        }
+        
+        // Get correct answer text for multiple choice
+        function getCorrectAnswerText(questionNum, selectedValue) {
+            switch(questionNum) {
+                case 1:
+                    return "ب) امرؤ";
+                case 2:
+                    return "ج) ابتسم";
+                case 3:
+                    return "أ) أول الكلمة فقط";
+                case 4:
+                    return "ب) وسط الكلمة";
+                case 5:
+                    return "ج) أمر";
+                case 11:
+                    return "❌ خطأ";
+                case 12:
+                    return "❌ خطأ";
+                case 13:
+                    return "✔️ صح";
+                case 14:
+                    return "❌ خطأ";
+                case 15:
+                    return "✔️ صح";
+                default:
+                    return correctAnswers["q" + questionNum];
+            }
+        }
+        
+        // Move to next section
+        function nextSection(sectionNum) {
+            document.getElementById(`section${currentSection}`).classList.remove("active");
+            document.getElementById(`section${sectionNum}`).classList.add("active");
+            currentSection = sectionNum;
+            window.scrollTo(0, 0);
+        }
+        
+        // Show final results
+        function showFinalResults() {
+            document.getElementById("section4").classList.remove("active");
+            document.getElementById("finalSection").classList.add("active");
+            
+            const totalScore = scores.reduce((a, b) => a + b, 0);
+            document.getElementById("finalScore").textContent = totalScore;
+            
+            // Set emoji and rank based on score
+            let emoji = "🎉";
+            let rank = "بطل الهمزات!";
+            
+            if (totalScore >= 18) {
+                emoji = "🌟";
+                rank = "بطل الهمزات! — أنت خبير لغوي!";
+            } else if (totalScore >= 14) {
+                emoji = "👍";
+                rank = "ممتاز! — لديك فهم قوي، استمر!";
+            } else if (totalScore >= 10) {
+                emoji = "📚";
+                rank = "جيد! — راجع القواعد وعاود المحاولة!";
+            } else {
+                emoji = "💪";
+                rank = "ابدأ من جديد! — لا تيأس، التدريب يصنع الأبطال!";
+            }
+            
+            document.getElementById("emojiResult").textContent = emoji;
+            document.getElementById("rankResult").textContent = rank;
+            
+            updateProgressBar();
+            window.scrollTo(0, 0);
+        }
+        
+        // Update progress bar
+        function updateProgressBar() {
+            const totalScore = scores.reduce((a, b) => a + b, 0);
+            const percentage = (totalScore / totalQuestions) * 100;
+            document.getElementById("progressBar").style.width = percentage + "%";
+        }
+        
+        // Restart game
+        function restartGame() {
+            // Reset scores
+            scores = [0, 0, 0, 0];
+            
+            // Reset all sections
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`section${i}`).classList.remove("active");
+                document.getElementById(`score${i}`).textContent = "0";
+                
+                // Reset radio buttons
+                const radios = document.querySelectorAll(`#section${i} input[type="radio"]`);
+                radios.forEach(radio => {
+                    radio.checked = false;
+                });
+                
+                // Reset text inputs
+                const textInputs = document.querySelectorAll(`#section${i} input[type="text"]`);
+                textInputs.forEach(input => {
+                    input.value = "";
+                });
+                
+                // Hide feedback
+                const feedbacks = document.querySelectorAll(`#section${i} .feedback`);
+                feedbacks.forEach(feedback => {
+                    feedback.style.display = "none";
+                });
+                
+                // Hide next buttons
+                const nextButtons = document.querySelectorAll(`#next${i}`);
+                nextButtons.forEach(button => {
+                    button.classList.add("hidden");
+                });
+            }
+            
+            // Show first section
+            document.getElementById("section1").classList.add("active");
+            document.getElementById("finalSection").classList.remove("active");
+            
+            // Reset progress bar
+            document.getElementById("progressBar").style.width = "0%";
+            
+            currentSection = 1;
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
